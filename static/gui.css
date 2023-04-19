@@ -72,3 +72,12 @@
     text-shadow: 1px 1px #000000;
     /* Add text shadow for better readability */
 }
+
+.left-column {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 200px;
+    height: 100%;
+  }

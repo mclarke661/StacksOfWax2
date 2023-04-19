@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Apr 18, 2023 at 01:02 PM
+-- Generation Time: Apr 19, 2023 at 05:25 PM
 -- Server version: 5.7.39
 -- PHP Version: 7.4.33
 
@@ -209,8 +209,44 @@ CREATE TABLE `song` (
   `song_id` int(11) NOT NULL,
   `song_name` varchar(255) NOT NULL,
   `song_duration` time NOT NULL,
-  `album_id` int(11) NOT NULL
+  `album_id` int(11) NOT NULL,
+  `track_number` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `song`
+--
+
+INSERT INTO `song` (`song_id`, `song_name`, `song_duration`, `album_id`, `track_number`) VALUES
+(1, 'Speak to Me', '00:01:05', 1, 1),
+(2, 'Breathe', '00:02:49', 1, 2),
+(3, 'On the Run', '00:03:45', 1, 3),
+(4, 'Time', '00:06:53', 1, 4),
+(5, 'The Great Gig in the Sky', '00:04:43', 1, 5),
+(6, 'Money', '00:06:22', 1, 6),
+(7, 'Us and Them', '00:07:49', 1, 7),
+(8, 'Any Colour You Like', '00:03:26', 1, 8),
+(9, 'Brain Damage', '00:03:46', 1, 9),
+(10, 'Eclipse', '00:02:12', 1, 10),
+(11, 'Second Hand News', '00:02:43', 2, 1),
+(12, 'Dreams', '00:04:14', 2, 2),
+(13, 'Never Going Back Again', '00:02:02', 2, 3),
+(14, 'Don\'t Stop', '00:03:11', 2, 4),
+(15, 'Go Your Own Way', '00:03:38', 2, 5),
+(16, 'Songbird', '00:03:20', 2, 6),
+(17, 'The Chain', '00:04:28', 2, 7),
+(18, 'You Make Loving Fun', '00:03:31', 2, 8),
+(19, 'I Don\'t Want to Know', '00:03:11', 2, 9),
+(20, 'Oh Daddy', '00:03:54', 2, 10),
+(21, 'Gold Dust Woman', '00:04:51', 2, 11),
+(22, 'Thunder Road', '00:04:49', 3, 1),
+(23, 'Tenth Avenue Freeze-Out', '00:03:11', 3, 2),
+(24, 'Night', '00:03:00', 3, 3),
+(25, 'Backstreets', '00:06:30', 3, 4),
+(26, 'Born to Run', '00:04:31', 3, 5),
+(27, 'She\'s the One', '00:04:30', 3, 6),
+(28, 'Meeting Across the River', '00:03:18', 3, 7),
+(29, 'Jungleland', '00:09:34', 3, 8);
 
 -- --------------------------------------------------------
 
@@ -342,7 +378,7 @@ ALTER TABLE `review`
 -- AUTO_INCREMENT for table `song`
 --
 ALTER TABLE `song`
-  MODIFY `song_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `song_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `user_album`
