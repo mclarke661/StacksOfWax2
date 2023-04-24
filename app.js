@@ -5,66 +5,87 @@ const express = require("express");
 const app = express();
 const connection = require("./connection.js");
 const axios = require('axios');
-const routes = require('./routes/')
+// const routes = require('./routes/')
 
 app.use(express.static('static'));
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, './public')));
+// Parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/', routes);
-app.get("/", (req, res) => { 
-  res.send(`<h1>conference</h1>
-          <p><a href='/speakers/Melissa'>Melissa Brownlee</a></p>
-          <p><a href='/speakers/John'>John Busch</a></p>`);
+app.get("/", (req, res) => {
+  res.render("index");
 });
 
-app.get("/account/:username?", (req, res) => { 
-  let s_name = req.params.username;
-  res.send(`<h1>${s_name}</h1>`);
-});
+app.get('/sign', (request, response) => {
+  console.log(request.body.emailField);
+  response.render('forms');
+  });
+  
+  app.post('/sign', (request, response) => {
+    response.render('forms');
+  });
 
-app.get("/review/:suername", (req, res) => { 
-  let s_name = req.params.username;
-  res.send(`<h3>feedback comments on ${s_name}</h3>`);
-});
-
-app.get("/row",(req,res) => {
+app.get("/row", (req, res) => {
   let showid = req.query.album_id;
   let readsql = "SELECT * FROM album WHERE id = ? ";
 
-  connection.query(readsql,[album_id],(err, rows)=>{
-      if(err) throw err;
-      let album = {
-          name: rows[0]['album_name'],
-          imgp: rows[0]['album_art'],
-          year: rows[0]['album_year'],
-      }     
-      res.render('album',{album});
+  connection.query(readsql, [album_id], (err, rows) => {
+    if (err) throw err;
+    let album = {
+      name: rows[0]['album_name'],
+      imgp: rows[0]['album_art'],
+      year: rows[0]['album_year'],
+    }
+    res.render('album', { album });
   });
 });
 
-app.get('/admin/add', (req, res) => {
-  res.render("addalbum");
+app.post("/create", (req, res) => {
+
+  let senttitle = req.body.fieldTitle;
+  let sentimg = req.body.fieldImg;
+  let sentdes = req.body.fieldDescr;
+
+  const showData = {
+    title: senttitle,
+    img: sentimg,
+    description: sentdes,
+  };
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  }
+
+  let epoint = "http://jbusch.webhosting2.eeecs.qub.ac.uk/tvapi/?create&apikey=***";
+
+  axios.post(epoint, showData, config).then((response) => {
+    console.log(response.data);
+    res.render('add', { showData });
+  }).catch((err) => {
+    console.log(err.message);
+  });
 });
 
-app.get("/select",(req,res) => {
+app.get("/select", (req, res) => {
   let readsql = "SELECT * FROM album";
-  connection.query(readsql,(err, rows)=>{
-      if(err) throw err;
-      let rowdata = rows;
-      res.render('albums',{title: 'List of albums', rowdata});
+  connection.query(readsql, (err, rows) => {
+    if (err) throw err;
+    let rowdata = rows;
+    res.render('albums', { title: 'List of albums', rowdata });
   });
 });
 
 // Express route handler with URL: '/products' and a handler function 
 app.get('/products', (request, response) => {
   // Make the GET call by passing a config object to the instance  
-       axios.get('https://fakestoreapi.com/products?limit=5').then(apiResponse => { 
-             // process the response  
-             const products = apiResponse.data; 
-             response.json(products); 
-       });
+  axios.get('https://fakestoreapi.com/products?limit=5').then(apiResponse => {
+    // process the response  
+    const products = apiResponse.data;
+    response.json(products);
+  });
 });
 
 const db = mysql.createConnection({
@@ -72,13 +93,13 @@ const db = mysql.createConnection({
   user: 'root',
   password: 'root',
   database: 'stacks_of_wax',
-  port: '8889' 
+  port: '8889'
 });
 
 db.connect((err) => {
-    if(err){
-        return console.log(err.message);
-    }
+  if (err) {
+    return console.log(err.message);
+  }
   console.log('database connected successfully');
 });
 
@@ -117,10 +138,11 @@ function handleKeyPress(event) {
     event.target.form.submit();
   }
 }
+// app.use('/', routes);
+// app.use('/account', userRoute);
+// app.use('/review', reviewRoute)
 
-
-
-app.listen(process.env.PORT || 3000, () => { 
-  console.log("Server is running at port 3000"); 
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Server is running at port 3000");
 });
 
