@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Vinyl Tap</title>
+    <!-- local css file in public directory -->
+    <link rel="stylesheet" href="styles.css"> 
+</head>
+<body>
+    <header>
+        <h1> <%= title %> </h1>
+        <p>Web app is built using node, express and mysql to show my Vinyl Collection.</p>
+      </header>
+      <main>
+        <% rowdata.forEach((tvshow)=> { %>
+            <p>
+                <%= tvshow.showname %>
+                <span> 
+                    <a href="/row?album_id=<%=album.id%>">details</a> 
+                </span>
+            </p>
+        <% }) %>
+      </main>
+</body>
+</html>
