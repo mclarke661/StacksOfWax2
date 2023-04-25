@@ -6,6 +6,7 @@ const mysql = require('mysql');
 const db = require("./connection.js");
 const axios = require('axios');
 
+
 // const routes = require('./routes/')
 
 app.use(express.static('static'));
@@ -32,7 +33,7 @@ app.get("/row", (req, res) => {
   let showid = req.query.album_id;
   let readsql = "SELECT * FROM album WHERE id = ? ";
 
-  connection.query(readsql, [album_id], (err, rows) => {
+  db.query(readsql, [album_id], (err, rows) => {
     if (err) throw err;
     let album = {
       name: rows[0]['album_name'],
@@ -73,7 +74,7 @@ app.post("/create", (req, res) => {
 
 app.get("/select", (req, res) => {
   let readsql = "SELECT * FROM album";
-  connection.query(readsql, (err, rows) => {
+  db.query(readsql, (err, rows) => {
     if (err) throw err;
     let rowdata = rows;
     res.render('albums', { title: 'List of albums', rowdata });
@@ -108,12 +109,22 @@ app.get("/row",(req,res) => {
 });
 */
 
-app.get('/album_art', (req, res) => {
+  // album art
+  // app.get('/', (req, res) => {
+  //   db.query('SELECT album_art FROM album ORDER BY RAND() LIMIT 1', (err, result) => {
+  //     if (err) throw err;
+  //     const imageUrl = result[0].url;
+  //     res.render('index', { imageUrl });
+  //   });
+  // });
+
+app.get('/', (req, res) => {
   const sql = 'SELECT album_art FROM album';
   db.query(sql, (err, result) => {
     if (err) throw err;
     const albumArtUrls = result.map((row) => row.album_art);
-    res.json(albumArtUrls);
+    // res.json(albumArtUrls);
+    res.render('index', { albumArtUrls: albumArtUrls });
   });
 });
 

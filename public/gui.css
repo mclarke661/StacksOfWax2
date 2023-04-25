@@ -1,4 +1,4 @@
-.container {
+/* .container {
     width: 90%;
     margin: 0 auto;
     border: thin solid grey;
@@ -60,15 +60,9 @@
 }
 
 
-/* .my-brand {
-    color: #000000;
-    font-family: Arial, sans-serif;
-    font-size: 24px;
-    font-weight: bold;
-    text-shadow: 1px 1px #000000;
-} */
 
-.left-column {
+
+/* .left-column {
     position: fixed;
     top: 0;
     left: 0;
@@ -102,4 +96,65 @@ input[type=submit]{
  textarea{
     width: 100%;
     height: 80px;
+ } */ 
+
+ .collapse {
+    justify-content: flex-end;
  }
+
+
+
+ .navbar-toggler{
+    background-color: #FFF !important;
+ }
+
+ .main {
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 2em 0em;
+ }
+
+ .audio {
+    width: 250px;
+    height: 375px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 0.1em;
+    background-color: #272727;
+    color: white;
+    box-shadow: 1px 1px 20px 1px black;
+    flex: 1 1 20px;
+    margin: 1em;
+    border-radius: 5px;
+ }
+
+ .audio img {
+    width: 200px;
+    height: 200px;
+    margin: 0.5em;
+ }
+
+ .audio h2{
+    font-weight: 500;
+    font-size: medium;
+    margin: 0.5em;
+ }
+
+ .audio p{
+    font-size: small;
+    font-weight: 300;
+    text-align: center;
+    margin: 0.5em;
+ }
+
+ .my-brand {
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 1px 1px #000000;
+}
