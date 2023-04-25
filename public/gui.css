@@ -92,3 +92,14 @@ input, textarea{
 input[type=submit]{
     width: 30%;
 }
+
+.myadd{
+    width: 50%;
+ }
+ input[type=text]{
+    width: 100%;
+ }
+ textarea{
+    width: 100%;
+    height: 80px;
+ }

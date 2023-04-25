@@ -9,6 +9,7 @@ const basicAuth = require('express-basic-auth');
 //             <p><a href='/speakers/John'>John Busch</a></p>`);
 //   });
 
+//basic security
 const auth = basicAuth({
     users: { 'admin': 'admin123' },
     unauthorizedResponse: 'not authorized'});

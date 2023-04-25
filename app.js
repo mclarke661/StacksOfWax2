@@ -1,20 +1,22 @@
 const path = require('path');
-const mysql = require('mysql');
-
+// require('dotenv').config();
 const express = require("express");
 const app = express();
-const connection = require("./connection.js");
+const mysql = require('mysql');
+const db = require("./connection.js");
 const axios = require('axios');
+
 // const routes = require('./routes/')
 
 app.use(express.static('static'));
+const PORT = process.env.PORT || 4000;
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, './public')));
 // Parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.render("index");
+  res.render("index.ejs");
 });
 
 app.get('/sign', (request, response) => {
@@ -87,23 +89,6 @@ app.get('/products', (request, response) => {
     response.json(products);
   });
 });
-
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'stacks_of_wax',
-  port: '8889'
-});
-
-db.connect((err) => {
-  if (err) {
-    return console.log(err.message);
-  }
-  console.log('database connected successfully');
-});
-
-module.exports = db;
 
 /*app.get("/select",(req,res) => {
   let readsql = "SELECT * FROM tv_shows";
