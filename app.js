@@ -5,7 +5,6 @@ const mysql = require('mysql');
 const db = require("./connection.js");
 const axios = require('axios');
 
-
 app.use(express.static('static'));
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, './public')));
@@ -14,6 +13,18 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.render("index.ejs");
+});
+
+app.get("/login", (req, res) => {
+  res.render("login.ejs");
+});
+
+app.get("/signup", (req, res) => {
+  res.render("signup.ejs");
+});
+
+app.get("/forgotPassword", (req, res) => {
+  res.render("forgotPassword.ejs");
 });
 
 app.get('/album_art', (req, res) => {
