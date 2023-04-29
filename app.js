@@ -6,11 +6,15 @@ const axios = require('axios');
 const cookieParser = require('cookie-parser');
 const sessions = require('express-session');
 const db = require('./connection.js');
+const oneHour = 1000 * 60 * 60 * 1;
+const bcrypt = require("bcrypt")
+const saltRounds = 10
 
-//middleware to config session data
+app.use(cookieParser());
 app.use(sessions({
-  secret: 'thisisasecret',
-  saveUninitialized: false,
+  secret: "myshows14385899",
+  saveUninitialized: true,
+  cookie: { maxAge: oneHour },
   resave: false
 })
 );
@@ -56,19 +60,37 @@ app.get("/login", (req, res) => {
 
 app.post('/login', (req, res) => {
   let useremail = req.body.emailField;
+  let userpassword = req.body.passwordField;
 
-  let checkuser = 'SELECT * FROM my_users WHERE email = ? ';
+  let checkuser = 'SELECT * FROM user_details WHERE email = ? ';
 
   db.query(checkuser, [useremail], (err, rows) => {
     if (err) throw err;
     let numRows = rows.length;
     if (numRows > 0) {
-      res.redirect('/profile');
+      let hash = rows[0].password;
+      bcrypt.compare(userpassword, hash, (err, result) => {
+        if (result) {
+          let sessionobj = req.session;
+          sessionobj.authen = rows[0].user_id;
+          res.redirect('/profile');
+        } else {
+          res.redirect('/login');
+        }
+      });
     } else {
-      res.redirect('/');
+      res.redirect('/login');
     }
   });
+});
 
+app.get('/profile', (req, res) => {
+  let sessionobj = req.session;
+  if (sessionobj.authen) {
+    res.render('profile.ejs');
+  } else {
+    res.send("denied");
+  }
 });
 
 app.get("/admin/addAlbum", (req, res) => {
@@ -115,15 +137,6 @@ app.get("/signup", (req, res) => {
 
 app.get("/forgotPassword", (req, res) => {
   res.render("forgotPassword.ejs");
-});
-
-app.get('/album_art', (req, res) => {
-  const sql = 'SELECT album_art FROM album';
-  db.query(sql, (err, result) => {
-    if (err) throw err;
-    const albumArtUrls = result.map((row) => row.album_art);
-    res.json(albumArtUrls);
-  });
 });
 
 app.get('/myalbums', (req, res) => {
