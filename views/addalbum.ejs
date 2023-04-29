@@ -1,24 +1,179 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-   <title>MyAlbum</title>
-   <!-- local css file in public directory -->
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Vinyl Tap</title>
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+   <!-- css -->
    <link rel="stylesheet" href="gui.css">
+   <link rel="stylesheet" href="albums.css">
+
 </head>
+
 <body>
-   <nav>
-       <a href="/">Home</a>
-   </nav>
-   <main>
-       <h1>Add TV Show</h1>
-       <div class="myadd">
-         <form action="/create" method="POST">
-            <p>TV show: <input type="text" name="fieldTitle"> </p>
-            <p>TV image URI: <input type="text" name="fieldImg"> </p>
-            <p><textarea name="fieldDescr"></textarea></p>
-            <p><input type="submit" value="ADD"></p>
+
+   <header class="p-3 mb-3 border-bottom">
+      <div class="container">
+         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a class="navbar-brand" href="/">
+               <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Walk_of_Fame_Category_Audio_Recording.svg/806px-Walk_of_Fame_Category_Audio_Recording.svg.png?20230312122250"
+                  alt="Vinyl Tap" width="30" height="30">
+            </a>
+
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+               <li><a href="/" class="nav-link px-2 link-secondary">Vinyl Tap</a></li>
+            </ul>
+
+            <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+               <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+            </form>
+
+            <div class="dropdown text-end">
+               <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <img
+                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Grey_user_add_icon_%28Wikiproject_icons%29.svg/800px-Grey_user_add_icon_%28Wikiproject_icons%29.svg.png?20200310153858"
+                     alt="mdo" width="32" height="32" class="rounded-circle">
+               </a>
+               <ul class="dropdown-menu text-small" style="">
+                  <li><a class="dropdown-item" href="/login">Log in</a></li>
+                  <li><a class="dropdown-item" href="#">Profile</a></li>
+                  <li>
+                     <hr class="dropdown-divider">
+                  </li>
+                  <li><a class="dropdown-item" href="#">Sign out</a></li>
+               </ul>
+            </div>
+         </div>
+      </div>
+   </header>
+
+   <div class="container">
+      <main class="form-signin w-100 m-auto text-center">
+         <div class="py-5 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-disc"
+               viewBox="0 0 16 16">
+               <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+               <path
+                  d="M10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM8 4a4 4 0 0 0-4 4 .5.5 0 0 1-1 0 5 5 0 0 1 5-5 .5.5 0 0 1 0 1zm4.5 3.5a.5.5 0 0 1 .5.5 5 5 0 0 1-5 5 .5.5 0 0 1 0-1 4 4 0 0 0 4-4 .5.5 0 0 1 .5-.5z" />
+            </svg>
+            <h2>Add an album</h2>
+         </div>
+         <div>
+            <form class="needs-validation" novalidate="" action="/addalbum" method="POST">
+
+               <div class="col-12">
+                  <label for="album_name" class="form-label"></label>
+                  <div class="input-group has-validation">
+                     <input type="text" class="form-control" id="album_name" placeholder="Album title" required="">
+                     <div class="invalid-feedback">
+                        Valid album title is required.
+                     </div>
+                  </div>
+               </div>
+
+               <div class="col-12">
+                  <label for="album_year" class="form-label"></label>
+                  <div class="input-group has-validation">
+                     <input type="text" class="form-control" id="album_year" placeholder="Year" required="">
+                     <div class="invalid-feedback">
+                        Valid album year is required.
+                     </div>
+                  </div>
+               </div>
+
+               <div class="col-12">
+                  <label for="artist_name" class="form-label"></label>
+                  <div class="input-group has-validation">
+                     <input type="text" class="form-control" id="artist_name" placeholder="Artist" required="">
+                     <div class="invalid-feedback">
+                        Valid artist is required.
+                     </div>
+                  </div>
+               </div>
+
+               <div class="col-12">
+                  <label for="genre" class="form-label"></label>
+                  <div class="input-group has-validation">
+                     <input type="text" class="form-control" id="genre" placeholder="Genre" required="">
+                     <div class="invalid-feedback">
+                        Valid genre is required.
+                     </div>
+                  </div>
+               </div>
+
+               <div class="col-12">
+                  <label for="subgenre" class="form-label"></label>
+                  <div class="input-group has-validation">
+                     <input type="text" class="form-control" id="genre" placeholder="Sub-genre" required="">
+                     <div class="invalid-feedback">
+                        Valid genre is required.
+                     </div>
+                  </div>
+               </div>
+
+               <div class="col-12">
+                  <label for="subgenre2" class="form-label"></label>
+                  <div class="input-group has-validation">
+                     <input type="text" class="form-control" id="genre" placeholder="Sub-genre" required="">
+                     <div class="invalid-feedback">
+                        Valid genre is required.
+                     </div>
+                  </div>
+               </div>
+
+               <div class="col-12">
+                  <label for="record_company" class="form-label"></label>
+                  <div class="input-group has-validation">
+                     <input type="text" class="form-control" id="genre" placeholder="Record company" required="">
+                     <div class="invalid-feedback">
+                        Valid record company is required.
+                     </div>
+                  </div>
+               </div>
+
+               <div class="col-12">
+                  <label for="album_art" class="form-label"></label>
+                  <div class="input-group has-validation">
+                     <input type="text" class="form-control" id="genre" placeholder="Album art URL" required="">
+                     <div class="invalid-feedback">
+                        Valid URL is required.
+                     </div>
+                  </div>
+               </div>
+
+               
+         </div>
+
+         <hr class="my-4">
+         <div>
+            <button class="w-100 btn btn-primary btn-lg" type="submit">add album</button>
+         </div>
          </form>
-       </div>
+   </div>
+   </div>
    </main>
+
+   </div>
+
+   <div class="container">
+      <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+         <div class="col-md-4 d-flex align-items-center">
+            <span class="mb-3 mb-md-0 text-body-secondary">© 2023 Michael Clarke</span>
+         </div>
+      </footer>
+   </div>
+
+   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"
+      integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE"
+      crossorigin="anonymous"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"
+      integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ"
+      crossorigin="anonymous"></script>
 </body>
+
 </html>

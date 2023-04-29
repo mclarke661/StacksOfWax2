@@ -9,7 +9,6 @@
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <!-- css -->
     <link rel="stylesheet" href="gui.css">
-    <link rel="stylesheet" href="albums.css">
 
 </head>
 
@@ -49,39 +48,16 @@
         </div>
     </header>
 
-    <main>
-        <div class="album py-5 bg-body-tertiary">
-            <div class="container">
-
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-
-                    <% rowdata.forEach((album)=> { %>
-                        <div class="col">
-                            <div class="card shadow-sm">
-
-                                <div class="card-img-top" width="100%" height="100%"
-                                    preserveAspectRatio="xMidYMid slice" focusable="false">
-                                    <a> <img src="<%=album.album_art %>" alt=""> </a>
-                                </div>
-
-                                <div class="card-body">
-                                    <p class="card-text">
-                                        <%= album.album_name %>
-                                    </p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary"
-                                                ><a href="/album?album_id=<%=album.album_id%>">View</a></button>
-                                            <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                            
-                                        </div>
-                                        <small class="text-body-secondary">9 mins</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <% }) %>
+    <main class="text-center">
+        <p>Your favourite band is....</p>
+        <h4> <%= data %> </h4>
+        <form action="/fav" method="post">
+            <input name="favourite">
+            <input type="submit" value="choose">
+        </form>
     </main>
+
+
 
     <div class="container">
         <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
@@ -90,6 +66,7 @@
             </div>
         </footer>
     </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"
         integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE"
