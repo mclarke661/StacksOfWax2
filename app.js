@@ -1,14 +1,13 @@
-
 const express = require("express");
+const cookieParser = require('cookie-parser');
+const sessions = require('express-session');
 const app = express();
 const mysql = require('mysql');
 const axios = require('axios');
-const cookieParser = require('cookie-parser');
-const sessions = require('express-session');
 const db = require('./connection.js');
 const oneHour = 1000 * 60 * 60 * 1;
-const bcrypt = require("bcrypt")
-const saltRounds = 10
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 app.use(cookieParser());
 app.use(sessions({
@@ -18,6 +17,7 @@ app.use(sessions({
   resave: false
 })
 );
+
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: true }));
@@ -54,6 +54,47 @@ app.get("/album", (req, res) => {
   });
 });
 
+app.get("/signup", (req, res) => {
+  res.render('signup', {
+    message: undefined
+  });
+});
+
+app.post('/signup', (req, res) => {
+  let firstname = req.body.firstName;
+  let lastname = req.body.lastName;
+  let useremail = req.body.emailField;
+  let userpassword = req.body.passwordField;
+  let confirmpassword = req.body.confirmPasswordField;
+
+  db.query('SELECT email FROM user_details WHERE email = ?', [useremail], async (error, result) => {
+    if (error) {
+      console.log(error)
+    }
+    if (result.length > 0) {
+      return res.render('signup', {
+        message: 'This email is already in use'
+      })
+    } else if (userpassword !== confirmpassword) {
+      return res.render('signup', {
+        message: 'Passwords do not match!'
+      })
+    }
+
+    let hashedPassword = await bcrypt.hash(userpassword, saltRounds)
+
+    db.query('INSERT INTO user_details SET?', { firstname: firstname, lastname: lastname, email: useremail, password: hashedPassword }, (err, result) => {
+      if (error) {
+        console.log(error)
+      } else {
+        return res.render('signup', {
+          message: 'User registered!'
+        })
+      }
+    })
+  });
+});
+
 app.get("/login", (req, res) => {
   res.render("login.ejs");
 });
@@ -82,6 +123,10 @@ app.post('/login', (req, res) => {
       res.redirect('/login');
     }
   });
+});
+
+app.get("/forgotPassword", (req, res) => {
+  res.render("forgotPassword.ejs");
 });
 
 app.get('/profile', (req, res) => {
@@ -131,13 +176,7 @@ app.get("/admin/editalbum", (req, res) => {
   res.render("editalbum.ejs");
 });
 
-app.get("/signup", (req, res) => {
-  res.render("signup.ejs");
-});
 
-app.get("/forgotPassword", (req, res) => {
-  res.render("forgotPassword.ejs");
-});
 
 app.get('/myalbums', (req, res) => {
   //get at the session object and store it ina local variable

@@ -86,3 +86,16 @@ body {
 .signup-form form a:hover {
     text-decoration: underline;
 }  
+.success-message{
+    color: green;
+}
+
+.error-message{
+    color: red;
+}
+
+
+
+
+
+
