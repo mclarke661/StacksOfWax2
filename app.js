@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const cookieParser = require('cookie-parser');
 const sessions = require('express-session');
@@ -9,6 +10,8 @@ const oneHour = 1000 * 60 * 60 * 1;
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 const saltRounds = 10;
+const port = process.env.PORT || 3000;
+
 
 app.use(cookieParser());
 app.use(sessions({
@@ -29,12 +32,22 @@ app.get('/', (req, res) => {
 
 app.get('/albums', (req, res) => {
 
-  const sql = 'SELECT * FROM album';
+  let sql = 'SELECT album.*, SUM(song.song_duration) AS total_duration FROM album JOIN song ON album.album_id = song.album_id GROUP BY album.album_id';
+
   db.query(sql, (err, rows) => {
     if (err) throw err;
-    let rowdata = rows;
-    res.render('albums', { rowdata })
 
+    // Create array of album objects with data
+    let albums = rows.map(row => ({
+      id: row.album_id,
+      name: row.album_name,
+      img: row.album_art,
+      year: row.album_year,
+      totalDuration: row.total_duration
+    }));
+
+    // Render albums view with data
+    res.render('albums', { albums });
   });
 });
 
@@ -42,15 +55,25 @@ app.get("/album", (req, res) => {
 
   let album_id = req.query.album_id;
 
-  let sql = "SELECT * FROM album WHERE album_id = ? ";
+  let sql = "SELECT album.album_name, album.album_art, album.album_year, song.song_name, song.song_duration FROM album INNER JOIN song ON album.album_id = song.album_id WHERE album.album_id = ?";
+
 
   db.query(sql, [album_id], (err, rows) => {
     if (err) throw err;
     let album = {
       name: rows[0]['album_name'],
       img: rows[0]['album_art'],
-      year: rows[0]['album_year']
+      year: rows[0]['album_year'],
+      songs: []
     };
+    
+    for (let i = 0; i < rows.length; i++) {
+      let song = {
+        name: rows[i]['song_name'],
+        length: rows[i]['song_duration']
+      };
+      album.songs.push(song);
+    }
     res.render('album', { album });
   });
 });
@@ -208,7 +231,5 @@ app.post('/myalbums', (req, res) => {
   //send the session object key 'favalbum' to the band.ejs template
   res.render('myalbums', { data: sess_obj.favalbum });
 });
+app.listen(port, () => console.log(`listening on port ${port}...`));
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log("Server is running at port 3000");
-});
