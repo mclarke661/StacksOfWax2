@@ -7,6 +7,7 @@ const axios = require('axios');
 const db = require('./connection.js');
 const oneHour = 1000 * 60 * 60 * 1;
 const bcrypt = require("bcrypt");
+const session = require("express-session");
 const saltRounds = 10;
 
 app.use(cookieParser());
@@ -114,7 +115,7 @@ app.post('/login', (req, res) => {
         if (result) {
           let sessionobj = req.session;
           sessionobj.authen = rows[0].user_id;
-          res.redirect('/profile');
+          res.redirect('/dashboard');
         } else {
           res.redirect('/login');
         }
@@ -129,12 +130,21 @@ app.get("/forgotPassword", (req, res) => {
   res.render("forgotPassword.ejs");
 });
 
-app.get('/profile', (req, res) => {
+app.get('/dashboard', (req, res) => {
   let sessionobj = req.session;
   if (sessionobj.authen) {
-    res.render('profile.ejs');
+    let uid = sessionobj.authen;
+    let user = 'SELECT * FROM user_details WHERE user_id = ?';
+    db.query(user, [uid], (err, row) => {
+      if (err) throw err;
+      let firstrow = row[0];
+      res.render('dashboard', { userdata: firstrow });
+    });
+
   } else {
-    res.send("denied");
+    return res.render('login', {
+      message: 'denied!'
+    })
   }
 });
 
