@@ -64,12 +64,13 @@
             <h2>Add an album</h2>
          </div>
          <div>
-            <form class="needs-validation" novalidate="" action="/addalbum" method="POST">
+            <form class="needs-validation" novalidate="" action="/admin/addalbum" method="POST">
 
                <div class="col-12">
                   <label for="album_name" class="form-label"></label>
                   <div class="input-group has-validation">
-                     <input type="text" class="form-control" id="album_name" placeholder="Album title" required="">
+                     <input type="text" class="form-control" id="album_name" placeholder="Album title" name="fieldAlbum"
+                        required="">
                      <div class="invalid-feedback">
                         Valid album title is required.
                      </div>
@@ -79,7 +80,8 @@
                <div class="col-12">
                   <label for="album_year" class="form-label"></label>
                   <div class="input-group has-validation">
-                     <input type="text" class="form-control" id="album_year" placeholder="Year" required="">
+                     <input type="text" class="form-control" id="album_year" placeholder="Year" name="fieldYear"
+                        required="">
                      <div class="invalid-feedback">
                         Valid album year is required.
                      </div>
@@ -89,7 +91,8 @@
                <div class="col-12">
                   <label for="artist_name" class="form-label"></label>
                   <div class="input-group has-validation">
-                     <input type="text" class="form-control" id="artist_name" placeholder="Artist" required="">
+                     <input type="text" class="form-control" id="artist_name" placeholder="Artist" name="fieldArtist"
+                        required="">
                      <div class="invalid-feedback">
                         Valid artist is required.
                      </div>
@@ -99,7 +102,8 @@
                <div class="col-12">
                   <label for="genre" class="form-label"></label>
                   <div class="input-group has-validation">
-                     <input type="text" class="form-control" id="genre" placeholder="Genre" required="">
+                     <input type="text" class="form-control" id="genre" placeholder="Genre" name="fieldGenre"
+                        required="">
                      <div class="invalid-feedback">
                         Valid genre is required.
                      </div>
@@ -109,7 +113,8 @@
                <div class="col-12">
                   <label for="subgenre" class="form-label"></label>
                   <div class="input-group has-validation">
-                     <input type="text" class="form-control" id="genre" placeholder="Sub-genre" required="">
+                     <input type="text" class="form-control" id="genre" placeholder="Sub-genre" name="fieldSubgenre"
+                        required="">
                      <div class="invalid-feedback">
                         Valid genre is required.
                      </div>
@@ -119,7 +124,8 @@
                <div class="col-12">
                   <label for="subgenre2" class="form-label"></label>
                   <div class="input-group has-validation">
-                     <input type="text" class="form-control" id="genre" placeholder="Sub-genre" required="">
+                     <input type="text" class="form-control" id="genre" placeholder="Sub-genre" name="fieldSubgenre2"
+                        required="">
                      <div class="invalid-feedback">
                         Valid genre is required.
                      </div>
@@ -129,7 +135,8 @@
                <div class="col-12">
                   <label for="record_company" class="form-label"></label>
                   <div class="input-group has-validation">
-                     <input type="text" class="form-control" id="genre" placeholder="Record company" required="">
+                     <input type="text" class="form-control" id="genre" placeholder="Record company"
+                        name="fieldRecordCompany" required="">
                      <div class="invalid-feedback">
                         Valid record company is required.
                      </div>
@@ -139,20 +146,23 @@
                <div class="col-12">
                   <label for="album_art" class="form-label"></label>
                   <div class="input-group has-validation">
-                     <input type="text" class="form-control" id="genre" placeholder="Album art URL" required="">
+                     <input type="text" class="form-control" id="genre" placeholder="Album art URL" name="fieldAlbumArt"
+                        required="">
                      <div class="invalid-feedback">
                         Valid URL is required.
                      </div>
                   </div>
                </div>
 
-               
+
          </div>
 
          <hr class="my-4">
          <div>
             <button class="w-100 btn btn-primary btn-lg" type="submit">add album</button>
          </div>
+
+
          </form>
    </div>
    </div>

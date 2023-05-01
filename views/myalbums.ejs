@@ -48,13 +48,70 @@
         </div>
     </header>
 
-    <main class="text-center">
-        <p>Your favourite band is....</p>
-        <h4> <%= data %> </h4>
-        <form action="/fav" method="post">
-            <input name="favourite">
-            <input type="submit" value="choose">
-        </form>
+    <main>
+        <div class="container d-flex justify-content-between">
+            <div class="col-md-5 d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <div class="card-body">
+                    <form action="" method="POST">
+                        <div class="input-group mb-3">
+                            <input type="text" name="fieldSearch" value="" class="form-control"
+                                placeholder="Search data">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-5 d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <div class="card-body">
+                    <form action="" method="POST">
+                        <div class="form-floating">
+                            <select class="form-select" name="fieldSearch" id="fieldSearch" aria-label="Floating label select example" onchange="this.form.submit()">
+                                <option selected>Select Artist</option>
+                                <% artists.forEach((artist)=> { %>
+                                    <option value="<%=artist.name%>">
+                                        <%= artist.name %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                            <label for="fieldSearch">Filter by Artist</label>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="album py-5 bg-body-tertiary">
+            <div class="container">
+
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+
+                    <% albums.forEach((album)=> { %>
+                        <div class="col">
+                            <div class="card shadow-sm">
+
+                                <div class="card-img-top" width="100%" height="100%"
+                                    preserveAspectRatio="xMidYMid slice" focusable="false">
+                                    <a> <img src="<%=album.img %>" alt=""> </a>
+                                </div>
+
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <%= album.name %>
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary"><a
+                                                    href="/album?album_id=<%=album.id%>">View</a></button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+
+                                        </div>
+                                        <small class="text-body-secondary">
+                                            <%= album.totalDuration %>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <% }) %>
     </main>
 
 
