@@ -66,7 +66,8 @@
                 <div class="card-body">
                     <form action="" method="POST">
                         <div class="form-floating">
-                            <select class="form-select" name="fieldSearch" id="fieldSearch" aria-label="Floating label select example" onchange="this.form.submit()">
+                            <select class="form-select" name="fieldSearch" id="fieldSearch"
+                                aria-label="Floating label select example" onchange="this.form.submit()">
                                 <option selected>Select Artist</option>
                                 <% artists.forEach((artist)=> { %>
                                     <option value="<%=artist.name%>">
@@ -100,10 +101,8 @@
                                     </p>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="btn-group">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary"><a
-                                                    href="/album?album_id=<%=album.id%>">View</a></button>
-                                            <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-
+                                            <a href="/album?album_id=<%=album.id%>"> <button type="button"
+                                                    class="btn btn-sm btn-outline-secondary">View</button></a>
                                         </div>
                                         <small class="text-body-secondary">
                                             <%= album.totalDuration %>

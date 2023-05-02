@@ -10,7 +10,7 @@ const db = require('./connection.js');
 const routes = require('./routes/');
 const oneHour = 1000 * 60 * 60 * 1;
 const bcrypt = require("bcrypt");
-const session = require("express-session");
+// const session = require("express-session");
 const saltRounds = 10;
 
 // const auth = basicAuth({
@@ -100,7 +100,7 @@ app.get('/albums', (req, res) => {
 
 app.post('/albums', (req, res) => {
   let fieldSearch = req.body.fieldSearch;
-  console.log({ fieldSearch });
+
   let sql = 'SELECT * FROM album LEFT JOIN artist ON album.artist_id = artist.artist_id WHERE album.album_name LIKE ? OR artist.artist_name LIKE ?';
 
   db.query(sql, [fieldSearch + '%', fieldSearch + '%'], (err, rows) => {
@@ -114,6 +114,7 @@ app.post('/albums', (req, res) => {
       year: row.album_year,
       totalDuration: row.total_duration
     }));
+
     console.log(JSON.stringify(albums, null, 2));
     let searchArtistsSQL = 'SELECT * FROM artist';
 
@@ -133,36 +134,50 @@ app.post('/albums', (req, res) => {
 });
 
 app.get("/album", (req, res) => {
-
+  let sess_obj = req.session;
+  let user_id = sess_obj.authen;
   let album_id = req.query.album_id;
 
-  let sql = "SELECT album.album_name, album.album_art, album.album_year, genre.genre_name, subgenre.genre_name AS subgenre_name, subgenre2.genre_name AS subgenre2_name,record_company.record_company_name,song.song_name, song.song_duration FROM album INNER JOIN song ON album.album_id = song.album_id INNER JOIN genre ON album.genre_id = genre.genre_id INNER JOIN genre AS subgenre ON album.subgenre_id = subgenre.genre_id INNER JOIN genre AS subgenre2 ON album.subgenre2_id = subgenre2.genre_id INNER JOIN record_company ON album.record_company_id = record_company.record_company_id WHERE album.album_id = ?";
-// do query to check if user has liked this album
+  let sql = "SELECT album.album_name, album.album_art, album.album_year, genre.genre_name, subgenre.genre_name AS subgenre_name, subgenre2.genre_name AS subgenre2_name,record_company.record_company_name,song.song_name, song.song_duration FROM album INNER JOIN song ON album.album_id = song.album_id INNER JOIN genre ON album.genre_id = genre.genre_id LEFT JOIN genre AS subgenre ON album.subgenre_id = subgenre.genre_id LEFT JOIN genre AS subgenre2 ON album.subgenre2_id = subgenre2.genre_id INNER JOIN record_company ON album.record_company_id = record_company.record_company_id WHERE album.album_id = ?";
+
+  let checkAddedSql = "SELECT COUNT(*) AS addedCount FROM user_album_favourites WHERE user_id = ? AND album_id = ?";
+
+  let hasUserLiked = false;
+
+  db.query(checkAddedSql, [user_id, album_id], (checkAddedErr, checkAddedRows) => {
+    if (checkAddedErr) throw checkAddedErr;
+    let hasUserAdded = (checkAddedRows[0]['addedCount'] > 0);
+
+    hasUserLiked = hasUserAdded;
+
+  });
+
   db.query(sql, [album_id], (err, rows) => {
     if (err) throw err;
-    let album = {
-      id: album_id,
-      name: rows[0]['album_name'],
-      img: rows[0]['album_art'],
-      year: rows[0]['album_year'],
-      genre: rows[0]['genre_name'],
-      subgenre: rows[0]['subgenre_name'],
-      subgenre2: rows[0]['subgenre2_name'],
-      recordCompany: rows[0]['record_company_name'],
-      songs: []
-    };
-
-
-    for (let i = 0; i < rows.length; i++) {
-      let song = {
-        name: rows[i]['song_name'],
-        length: rows[i]['song_duration']
+    if (rows.length > 0) {
+      let album = {
+        id: album_id,
+        name: rows[0]['album_name'],
+        img: rows[0]['album_art'],
+        year: rows[0]['album_year'],
+        genre: rows[0]['genre_name'],
+        subgenre: rows[0]['subgenre_name'],
+        subgenre2: rows[0]['subgenre2_name'],
+        recordCompany: rows[0]['record_company_name'],
+        songs: []
       };
-      album.songs.push(song);
+
+      for (let i = 0; i < rows.length; i++) {
+        let song = {
+          name: rows[i]['song_name'],
+          length: rows[i]['song_duration']
+        };
+        album.songs.push(song);
+      }
+      res.render('album', { album, hasUserLiked });
+    } else {
+      res.status(404).send('Album not found');
     }
-    //pass back has user liked
-    let hasUserLiked = false;
-    res.render('album', { album, hasUserLiked });
   });
 });
 
@@ -430,7 +445,6 @@ app.get('/myalbums', (req, res) => {
     res.redirect('/login');
   }
   let userid = req.session.authen;
-  console.log('userid :', userid);
 
   let searchAlbumFavouritesSQL = 'SELECT favs.*, album.*, SUM(song.song_duration) AS total_duration FROM user_album_favourites AS favs LEFT JOIN album ON album.album_id = favs.album_id JOIN song ON album.album_id = song.album_id WHERE favs.user_id = ? GROUP BY album.album_id, favs.user_id';
   // let searchSQL = 'SELECT album.*, SUM(song.song_duration) AS total_duration FROM album JOIN song ON album.album_id = song.album_id GROUP BY album.album_id';
@@ -468,7 +482,6 @@ app.get('/myalbums', (req, res) => {
 
 app.post('/addalbums/favourite', (req, res) => {
   let album_id = req.body.album_id;
-  console.log(req.body.album_id);
   //get at the session object and store it ina local variable
   let sess_obj = req.session;
   //check to see if the userid exists. If not then set if with the
@@ -477,7 +490,6 @@ app.post('/addalbums/favourite', (req, res) => {
     res.redirect('/login');
   }
   let user_id = req.session.authen;
-  console.log('userid :', user_id);
 
   db.query('INSERT INTO user_album_favourites SET ?', { album_id, user_id }, (err, result) => {
     if (err) {

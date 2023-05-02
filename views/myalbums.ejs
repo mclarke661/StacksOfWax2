@@ -48,6 +48,7 @@
         </div>
     </header>
 
+
     <main>
         <div class="container d-flex justify-content-between">
             <div class="col-md-5 d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
@@ -65,7 +66,8 @@
                 <div class="card-body">
                     <form action="" method="POST">
                         <div class="form-floating">
-                            <select class="form-select" name="fieldSearch" id="fieldSearch" aria-label="Floating label select example" onchange="this.form.submit()">
+                            <select class="form-select" name="fieldSearch" id="fieldSearch"
+                                aria-label="Floating label select example" onchange="this.form.submit()">
                                 <option selected>Select Artist</option>
                                 <% artists.forEach((artist)=> { %>
                                     <option value="<%=artist.name%>">
@@ -79,9 +81,12 @@
                 </div>
             </div>
         </div>
+
         <div class="album py-5 bg-body-tertiary">
             <div class="container">
-
+                <div class="d-flex flex-wrap align-items-center justify-content-center">
+                    <h1 class="display-6">My Collection</h1>
+                </div>
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
 
                     <% albums.forEach((album)=> { %>
