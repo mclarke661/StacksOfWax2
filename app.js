@@ -345,18 +345,26 @@ app.get('/dashboard', (req, res) => {
   if (sessionobj.authen) {
     let uid = sessionobj.authen;
     let user = 'SELECT * FROM user_details WHERE user_id = ?';
-    db.query(user, [uid], (err, row) => {
-      if (err) throw err;
-      let firstrow = row[0];
-      res.render('dashboard', { userdata: firstrow });
-    });
 
+    let sqlTotalAlbums = 'SELECT COUNT(*) AS totalAlbums FROM user_album_favourites WHERE user_id = ?';
+
+    db.query(sqlTotalAlbums, [uid], (err, result) => {
+      if (err) throw err;
+      let totalAlbums = result[0].totalAlbums;
+
+      db.query(user, [uid], (err, row) => {
+        if (err) throw err;
+        let firstrow = row[0];
+        res.render('dashboard', { userdata: firstrow, totalAlbums: totalAlbums });
+      });
+    });
   } else {
     return res.render('login', {
       message: 'denied!'
     })
   }
 });
+
 
 app.get("/admin/addAlbum", (req, res) => {
   res.render("addalbum.ejs");

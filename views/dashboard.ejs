@@ -35,7 +35,7 @@
                         </div>
                         <div class="card-body">
                             <ul class="list-unstyled mt-3 mb-4">
-                                <li>Total:</li>
+                                <li>Total: <%= totalAlbums %></li>
                             </ul>
                             <a href="/myalbums"><button type="button" class="w-100 btn btn-lg btn-outline-primary">
                                     View my albums</button></a>
@@ -54,7 +54,9 @@
                                 <li>Edit album</li>
                                 <li>Delete album</li>
                             </ul>
-                            <button type="button" class="w-100 btn btn-lg btn-outline-primary">Admin access</button>
+                            <a href="/admin/addalbum"><button type="button"
+                                    class="w-100 btn btn-lg btn-outline-primary">Admin access</button></a>
+
                         </div>
                     </div>
                 </div>
