@@ -12,6 +12,7 @@ const oneHour = 1000 * 60 * 60 * 1;
 const bcrypt = require("bcrypt");
 // const session = require("express-session");
 const saltRounds = 10;
+const errorHandler = require('./middleware/errorhandler');
 
 // const auth = basicAuth({
 //   users: { 'admin': 'admin123' },
@@ -25,9 +26,15 @@ const saltRounds = 10;
 //         });
 // });
 
+//passing the req object
+app.use((req, res, next) => {
+  res.locals.req = req;
+  next();
+});
+
 app.use(cookieParser());
 app.use(sessions({
-  secret: "myshows14385899",
+  secret: "myalbums14385899",
   saveUninitialized: true,
   cookie: { maxAge: oneHour },
   resave: false
@@ -58,9 +65,28 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use('/', routes);
+app.use(errorHandler);
 
-app.get('/', (req, res) => {
-  res.render('index');
+
+
+app.get("/", (req, res) => {
+  let searchAlbumsSQL = 'SELECT * FROM album';
+
+  let albums = [];
+
+  db.query(searchAlbumsSQL, (err, rows) => {
+    if (err) throw err;
+
+    // Create array of album objects with data
+    albums = rows.map(row => ({
+      id: row.album_id,
+      img: row.album_art
+    }));
+
+    // Render albums view with data
+    res.render("index", { albums });
+
+  });
 });
 
 app.get('/albums', (req, res) => {
@@ -68,6 +94,7 @@ app.get('/albums', (req, res) => {
 
   let albums = [];
   let artists = [];
+  let genres = [];
 
   db.query(searchAlbumsSQL, (err, rows) => {
     if (err) throw err;
@@ -90,20 +117,36 @@ app.get('/albums', (req, res) => {
         id: row.artist_id,
         name: row.artist_name
       }));
-      // Render albums view with data
-      res.render('albums', { albums, artists });
+
+      let searchGenresSQL = 'SELECT * FROM genre';
+
+      db.query(searchGenresSQL, (err, rows) => {
+        if (err) throw err;
+
+        // Create array of album objects with data
+        genres = rows.map(row => ({
+          id: row.genre_id,
+          name: row.genre_name
+        }));
+
+        res.render('albums', { albums, artists, genres });
+      });
     });
+
   });
-
-
 });
 
 app.post('/albums', (req, res) => {
   let fieldSearch = req.body.fieldSearch;
 
-  let sql = 'SELECT * FROM album LEFT JOIN artist ON album.artist_id = artist.artist_id WHERE album.album_name LIKE ? OR artist.artist_name LIKE ?';
+  let sql = `SELECT * FROM album
+  LEFT JOIN artist ON album.artist_id = artist.artist_id
+  LEFT JOIN genre AS genre ON album.genre_id = genre.genre_id
+  LEFT JOIN genre AS subgenre ON album.subgenre_id = subgenre.genre_id
+  LEFT JOIN genre AS subgenre2 ON album.subgenre2_id = subgenre2.genre_id
+  WHERE album.album_name LIKE ? OR artist.artist_name LIKE ? OR genre.genre_name LIKE ? OR subgenre.genre_name LIKE ? OR subgenre2.genre_name LIKE ?`;
 
-  db.query(sql, [fieldSearch + '%', fieldSearch + '%'], (err, rows) => {
+  db.query(sql, [fieldSearch + '%', fieldSearch + '%', fieldSearch + '%', fieldSearch + '%', fieldSearch + '%'], (err, rows) => {
     if (err) throw err;
 
     // Create array of album objects with data
@@ -116,6 +159,7 @@ app.post('/albums', (req, res) => {
     }));
 
     console.log(JSON.stringify(albums, null, 2));
+
     let searchArtistsSQL = 'SELECT * FROM artist';
 
     db.query(searchArtistsSQL, (err, rows) => {
@@ -127,8 +171,20 @@ app.post('/albums', (req, res) => {
         name: row.artist_name
       }));
 
-      // Render albums view with data
-      res.render('albums', { albums, artists });
+      let searchGenresSQL = 'SELECT * FROM genre';
+
+      db.query(searchGenresSQL, (err, rows) => {
+        if (err) throw err;
+
+        // Create array of album objects with data
+        let genres = rows.map(row => ({
+          id: row.genre_id,
+          name: row.genre_name
+        }));
+
+        // Render albums view with data
+        res.render('albums', { albums, artists, genres });
+      });
     });
   });
 });
@@ -241,6 +297,7 @@ app.post('/login', (req, res) => {
         if (result) {
           let sessionobj = req.session;
           sessionobj.authen = rows[0].user_id;
+          sessionobj.sessValid = true;
           res.redirect('/dashboard');
         } else {
           res.redirect('/login');
@@ -252,7 +309,12 @@ app.post('/login', (req, res) => {
   });
 });
 
-app.get("/forgotPassword", (req, res) => {
+app.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect('/');
+});
+
+app.get('/forgotPassword', (req, res) => {
   res.render("forgotPassword.ejs");
 });
 
@@ -500,6 +562,8 @@ app.post('/addalbums/favourite', (req, res) => {
   })
 
 });
+
+
 
 const server = app.listen(PORT, () => {
   console.log(`API started on port ${server.address().port}`);
