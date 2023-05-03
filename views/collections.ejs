@@ -1,0 +1,23 @@
+<%- include ('header') %>
+
+    <div class="container">
+        <% for (const user_id in user_collections) { %>
+            <h2>User <%= user_id %>'s Collection:</h2>
+            <div class="row">
+                <% for (const album_id in user_collections[user_id]) { %>
+                    <% user_collections[user_id][album_id].forEach((album)=> { %>
+                        <div class="col-md-3">
+                            <a href="/album?album_id=<%= album.id %>">
+                                <img src="<%= album.img %>" class="d-block w-100" alt="Album Art">
+                            </a>
+                            <h5>
+                                <%= album.name %>
+                            </h5>
+                        </div>
+                        <% }) %>
+                            <% } %>
+            </div>
+            <% } %>
+    </div>
+
+    <%- include ('footer') %>

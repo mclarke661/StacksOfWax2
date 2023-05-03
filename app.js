@@ -236,8 +236,8 @@ app.get("/album", (req, res) => {
         album.songs.push(song);
       }
 
-      
       res.render('album', { album, hasUserAdded });
+
     } else {
       res.status(404).send('Album not found');
     }
@@ -652,7 +652,7 @@ app.post('/addalbums/favourite', (req, res) => {
 
 app.post('/addalbums/removefavourite', (req, res) => {
   let album_id = req.body.album_id;
-  
+
   //get at the session object and store it in a local variable
   let sess_obj = req.session;
   //check to see if the userid exists. If not then set if with the
@@ -670,8 +670,44 @@ app.post('/addalbums/removefavourite', (req, res) => {
     }
   })
 });
+app.get('/collections', (req, res) => {
+  let sql = `SELECT album.*, user_album_favourites.user_id
+  FROM album
+  INNER JOIN user_album_favourites
+  ON album.album_id = user_album_favourites.album_id;
+  `;
 
+  db.query(sql, (err, result) => {
+    if (err) throw err;
 
+    let user_collections = {};
+    result.forEach((row) => {
+      let user_id = row["user_id"];
+      if (!(user_id in user_collections)) {
+        user_collections[user_id] = {};
+      }
+      let album_id = row["album_id"];
+      if (!(album_id in user_collections[user_id])) {
+        user_collections[user_id][album_id] = [];
+      }
+      user_collections[user_id][album_id].push({
+        name: row["album_name"],
+        id: row["album_id"],
+        img: row["album_art"]
+      });
+    });
+    res.render("collections", { user_collections: user_collections });
+  });
+});
+
+app.get('/users/:user_id/collections', (req, res) => {
+  // Retrieve the list of albums associated with the requested user_id
+  let user_id = req.params.user_id;
+  let albums = db.query('SELECT * FROM album WHERE album_id IN (SELECT album_id FROM user_album_favourites WHERE user_id = ?)', [user_id]);
+
+  // Render a view that displays the albums
+  res.render('collections', { albums });
+});
 
 
 const server = app.listen(PORT, () => {
