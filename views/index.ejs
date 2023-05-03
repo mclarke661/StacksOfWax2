@@ -1,7 +1,35 @@
 <%- include ('header') %>
-
   <main>
-    <div>test</div>
+    <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+      <% var chunks=[], size=3; %>
+        <% for (var i=0; i < albums.length; i +=size) { %>
+          <% chunks.push(albums.slice(i, i + size)); %>
+            <% } %>
+              <div class="carousel-inner">
+                <% chunks.forEach((chunk, index)=> { %>
+                  <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                    <div class="row">
+                      <% chunk.forEach((album)=> { %>
+                        <div class="col-md-4">
+                          <a href="/album?album_id=<%=album.id%>"><img src="<%=album.img %>" class="d-block w-100"
+                              alt="Album Art"></a>
+                        </div>
+                        <% }) %>
+                    </div>
+                  </div>
+                  <% }) %>
+              </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+    </div>
+
   </main>
+
 
   <%- include ('footer') %>

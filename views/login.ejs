@@ -1,41 +1,38 @@
-<%- include ('headerLogin') %>
+<%- include ('headerSignup') %>
 
-    <main class="form-signin w-100 text-center">
-        <div class="container">
-            <main class="form-signin w-100 m-aut text-center">
+    <div class="signup-form text-center">
+        <form action="/login" method="POST">
+            <img class="mb-4"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Walk_of_Fame_Category_Audio_Recording.svg/806px-Walk_of_Fame_Category_Audio_Recording.svg.png?20230312122250"
+                alt="" width="100" height="100">
+            <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+            <div class="form-group">
+                <input type="email" name="emailField" class="form-control" id="floatingInput"
+                    placeholder="name@example.com">
+                <label for="floatingInput">Email address</label>
+            </div>
+            <div class="form-group">
+                <input type="password" name="passwordField" class="form-control" id="floatingPassword"
+                    placeholder="Password">
+                <label for="floatingPassword">Password</label>
+            </div>
 
-                <form action="/login" method="POST">
-                    <img class="mb-4"
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Walk_of_Fame_Category_Audio_Recording.svg/806px-Walk_of_Fame_Category_Audio_Recording.svg.png?20230312122250"
-                        alt="" width="100" height="100">
-                    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+            <div class="form-group">
+                <div class="checkbox mb-3">
+                    <label>
+                        <input type="checkbox" value="remember-me"> Remember me
+                    </label>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success btn-lg btn-block">Log in</button>
+                </div>
+                <div class="mt-5 mb-3 text-body-secondary">
+                    <p>New around here? <a href="/signup">Sign up</a></p>
+                    <p><a href="/forgotPassword">Forgot password?</a></p>
+                </div>
+        </form>
+    </div>
 
-                    <div class="form-floating">
-                        <input type="email" name="emailField" class="form-control" id="floatingInput" placeholder="name@example.com">
-                        <label for="floatingInput">Email address</label>
-                    </div>
-                    <div class="form-floating">
-                        <input type="password" name="passwordField" class="form-control" id="floatingPassword" placeholder="Password">
-                        <label for="floatingPassword">Password</label>
-                    </div>
-
-                    <div class="checkbox mb-3">
-                        <label>
-                            <input type="checkbox" value="remember-me"> Remember me
-                        </label>
-                    </div>
-                    <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-
-
-                    <div class="mt-5 mb-3 text-body-secondary">
-                        <p>New around here? <a href="/signup">Sign up</a></p>
-                        <p><a href="/forgotPassword">Forgot password?</a></p>
-                    </div>
-                </form>
-
-            </main>
-        </div>
-    </main>
+ 
 
     <%- include ('footer') %>
-    

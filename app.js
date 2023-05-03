@@ -64,26 +64,26 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use('/', routes);
-app.use(errorHandler);
+// app.use('/', routes);
+// app.use(errorHandler);
 
 
 
 app.get("/", (req, res) => {
-  let searchAlbumsSQL = 'SELECT * FROM album';
-
-  let albums = [];
+  let searchAlbumsSQL = 'SELECT album_id, album_name, album_art FROM album';
 
   db.query(searchAlbumsSQL, (err, rows) => {
     if (err) throw err;
 
     // Create array of album objects with data
-    albums = rows.map(row => ({
+    let albums = rows.map(row => ({
       id: row.album_id,
-      img: row.album_art
+      name: row.album_name,
+      img: row.album_art,
     }));
 
     // Render albums view with data
+    console.log({ albums });
     res.render("index", { albums });
 
   });
@@ -194,18 +194,23 @@ app.get("/album", (req, res) => {
   let user_id = sess_obj.authen;
   let album_id = req.query.album_id;
 
-  let sql = "SELECT album.album_name, album.album_art, album.album_year, genre.genre_name, subgenre.genre_name AS subgenre_name, subgenre2.genre_name AS subgenre2_name,record_company.record_company_name,song.song_name, song.song_duration FROM album INNER JOIN song ON album.album_id = song.album_id INNER JOIN genre ON album.genre_id = genre.genre_id LEFT JOIN genre AS subgenre ON album.subgenre_id = subgenre.genre_id LEFT JOIN genre AS subgenre2 ON album.subgenre2_id = subgenre2.genre_id INNER JOIN record_company ON album.record_company_id = record_company.record_company_id WHERE album.album_id = ?";
+  let sql = `SELECT album.album_name, album.album_art, album.like_counter, album.album_year, genre.genre_name, subgenre.genre_name
+  AS subgenre_name, subgenre2.genre_name
+  AS subgenre2_name,record_company.record_company_name,song.song_name, song.song_duration
+  FROM album
+  INNER JOIN song ON album.album_id = song.album_id
+  INNER JOIN genre ON album.genre_id = genre.genre_id
+  LEFT JOIN genre AS subgenre ON album.subgenre_id = subgenre.genre_id
+  LEFT JOIN genre AS subgenre2 ON album.subgenre2_id = subgenre2.genre_id
+  INNER JOIN record_company ON album.record_company_id = record_company.record_company_id WHERE album.album_id = ?`;
 
   let checkAddedSql = "SELECT COUNT(*) AS addedCount FROM user_album_favourites WHERE user_id = ? AND album_id = ?";
 
-  let hasUserLiked = false;
+  let hasUserAdded = false;
 
   db.query(checkAddedSql, [user_id, album_id], (checkAddedErr, checkAddedRows) => {
     if (checkAddedErr) throw checkAddedErr;
-    let hasUserAdded = (checkAddedRows[0]['addedCount'] > 0);
-
-    hasUserLiked = hasUserAdded;
-
+    hasUserAdded = (checkAddedRows[0]['addedCount'] > 0);
   });
 
   db.query(sql, [album_id], (err, rows) => {
@@ -230,10 +235,27 @@ app.get("/album", (req, res) => {
         };
         album.songs.push(song);
       }
-      res.render('album', { album, hasUserLiked });
+
+      
+      res.render('album', { album, hasUserAdded });
     } else {
       res.status(404).send('Album not found');
     }
+  });
+});
+
+app.post("album/like", (req, res) => {
+  let sess_obj = req.session;
+  if (!sess_obj.authen) {
+    res.redirect('/login');
+  }
+  let userid = req.session.authen;
+  let album_id = req.body.album_id;
+
+  let addLikeSql = "INSERT INTO album.like_counter (user_id, album_id) VALUES (?, ?)";
+  db.query(addLikeSql, [user_id, album_id], (addLikeErr, addLikeResult) => {
+    if (addLikeErr) throw addLikeErr;
+    res.redirect(`/album?album_id=${album_id}`);
   });
 });
 
@@ -536,15 +558,80 @@ app.get('/myalbums', (req, res) => {
         name: row.artist_name
       }));
 
-      //send the session object key favalbum to the band.ejs template
-      res.render('myalbums', { data: sess_obj.authen, albums, artists });
+      let searchGenresSQL = 'SELECT * FROM genre';
+
+      db.query(searchGenresSQL, (err, rows) => {
+        if (err) throw err;
+
+        // Create array of album objects with data
+        genres = rows.map(row => ({
+          id: row.genre_id,
+          name: row.genre_name
+        }));
+
+        //send the session object key favalbum to the band.ejs template
+        res.render('myalbums', { data: sess_obj.authen, albums, artists, genres });
+      });
+    });
+  });
+});
+
+app.post('/myalbums', (req, res) => {
+  let fieldSearch = req.body.fieldSearch;
+
+  let sql = `SELECT * FROM album
+  LEFT JOIN artist ON album.artist_id = artist.artist_id
+  LEFT JOIN genre AS genre ON album.genre_id = genre.genre_id
+  LEFT JOIN genre AS subgenre ON album.subgenre_id = subgenre.genre_id
+  LEFT JOIN genre AS subgenre2 ON album.subgenre2_id = subgenre2.genre_id
+  WHERE album.album_name LIKE ? OR artist.artist_name LIKE ? OR genre.genre_name LIKE ? OR subgenre.genre_name LIKE ? OR subgenre2.genre_name LIKE ?`;
+
+  db.query(sql, [fieldSearch + '%', fieldSearch + '%', fieldSearch + '%', fieldSearch + '%', fieldSearch + '%'], (err, rows) => {
+    if (err) throw err;
+
+    // Create array of album objects with data
+    let albums = rows.map(row => ({
+      id: row.album_id,
+      name: row.album_name,
+      img: row.album_art,
+      year: row.album_year,
+      totalDuration: row.total_duration
+    }));
+
+    console.log(JSON.stringify(albums, null, 2));
+
+    let searchArtistsSQL = 'SELECT * FROM artist';
+
+    db.query(searchArtistsSQL, (err, rows) => {
+      if (err) throw err;
+
+      // Create array of album objects with data
+      let artists = rows.map(row => ({
+        id: row.artist_id,
+        name: row.artist_name
+      }));
+
+      let searchGenresSQL = 'SELECT * FROM genre';
+
+      db.query(searchGenresSQL, (err, rows) => {
+        if (err) throw err;
+
+        // Create array of album objects with data
+        let genres = rows.map(row => ({
+          id: row.genre_id,
+          name: row.genre_name
+        }));
+
+        // Render albums view with data
+        res.render('myalbums', { albums, artists, genres });
+      });
     });
   });
 });
 
 app.post('/addalbums/favourite', (req, res) => {
   let album_id = req.body.album_id;
-  //get at the session object and store it ina local variable
+  //get at the session object and store it in a local variable
   let sess_obj = req.session;
   //check to see if the userid exists. If not then set if with the
   //string 'error'
@@ -562,6 +649,28 @@ app.post('/addalbums/favourite', (req, res) => {
   })
 
 });
+
+app.post('/addalbums/removefavourite', (req, res) => {
+  let album_id = req.body.album_id;
+  
+  //get at the session object and store it in a local variable
+  let sess_obj = req.session;
+  //check to see if the userid exists. If not then set if with the
+  //string 'error'
+  if (!sess_obj.authen) {
+    res.redirect('/login');
+  }
+  let user_id = req.session.authen;
+
+  db.query('DELETE FROM user_album_favourites WHERE album_id = ? AND user_id = ?', [album_id, user_id], (err, result) => {
+    if (err) {
+      console.log(err)
+    } else {
+      res.redirect('/myalbums')
+    }
+  })
+});
+
 
 
 
