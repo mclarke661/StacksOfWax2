@@ -10,6 +10,7 @@ Instructions on how to run the system locally
 -In XAMPP/MAMP, start with the apache web server. MySQL will run on port 3306 on WindowsOS, and on port 8889 on MacOS. The default setup is for MacOS. If using WindowsOS, within VS code access the ‘connection.js’ file and change the following:
 
 password : ‘’,
+
 port : 3306
 
 -PhpMyAdmin server should be automatically opened after clicking ‘start’ in MAMP.
