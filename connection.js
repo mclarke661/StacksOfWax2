@@ -3,7 +3,7 @@ let db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'root',
-    database: 'stacks_of_wax',
+    database: '40371893',
     port: '8889' 
 });
 

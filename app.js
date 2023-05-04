@@ -65,9 +65,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // app.use('/', routes);
-// app.use(errorHandler);
-
-
+app.use(errorHandler);
 
 app.get("/", (req, res) => {
   let searchAlbumsSQL = 'SELECT album_id, album_name, album_art FROM album';
@@ -90,7 +88,10 @@ app.get("/", (req, res) => {
 });
 
 app.get('/albums', (req, res) => {
-  let searchAlbumsSQL = 'SELECT album.*, SUM(song.song_duration) AS total_duration FROM album JOIN song ON album.album_id = song.album_id GROUP BY album.album_id';
+  let searchAlbumsSQL = `SELECT album.*, SUM(song.song_duration)
+  AS total_duration FROM album
+  JOIN song ON album.album_id = song.album_id
+  GROUP BY album.album_id`;
 
   let albums = [];
   let artists = [];
@@ -118,7 +119,11 @@ app.get('/albums', (req, res) => {
         name: row.artist_name
       }));
 
-      let searchGenresSQL = 'SELECT * FROM genre';
+      let searchGenresSQL = `SELECT DISTINCT genre.genre_id, genre.genre_name 
+      FROM genre
+      INNER JOIN album ON album.genre_id = genre.genre_id 
+      OR album.subgenre_id = genre.genre_id 
+      OR album.subgenre2_id = genre.genre_id`;
 
       db.query(searchGenresSQL, (err, rows) => {
         if (err) throw err;
@@ -128,11 +133,9 @@ app.get('/albums', (req, res) => {
           id: row.genre_id,
           name: row.genre_name
         }));
-
         res.render('albums', { albums, artists, genres });
       });
     });
-
   });
 });
 
@@ -157,9 +160,7 @@ app.post('/albums', (req, res) => {
       year: row.album_year,
       totalDuration: row.total_duration
     }));
-
-    console.log(JSON.stringify(albums, null, 2));
-
+    // console.log(JSON.stringify(albums, null, 2));
     let searchArtistsSQL = 'SELECT * FROM artist';
 
     db.query(searchArtistsSQL, (err, rows) => {
@@ -171,7 +172,12 @@ app.post('/albums', (req, res) => {
         name: row.artist_name
       }));
 
-      let searchGenresSQL = 'SELECT * FROM genre';
+      let searchGenresSQL = `SELECT DISTINCT genre.genre_id, genre.genre_name 
+      FROM genre
+      INNER JOIN album ON album.genre_id = genre.genre_id 
+      OR album.subgenre_id = genre.genre_id 
+      OR album.subgenre2_id = genre.genre_id
+      `;
 
       db.query(searchGenresSQL, (err, rows) => {
         if (err) throw err;
@@ -678,6 +684,7 @@ app.post('/addalbums/removefavourite', (req, res) => {
     }
   })
 });
+
 app.get('/collections', (req, res) => {
   let sql = `SELECT album.*, user_album_favourites.user_id
   FROM album
@@ -716,7 +723,6 @@ app.get('/users/:user_id/collections', (req, res) => {
   // Render a view that displays the albums
   res.render('collections', { albums });
 });
-
 
 const server = app.listen(PORT, () => {
   console.log(`API started on port ${server.address().port}`);
